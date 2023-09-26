@@ -1,4 +1,3 @@
-
 # Trabalho realizado nas Semanas #2 e #3
 
 ## Identificação
@@ -6,7 +5,7 @@
 - Esta vulnerabilidade é usualmente denominada de “Authentication Bypass Using an Alternate Path or Channel”.
 - A autenticação através das redes sociais na aplicação do WordPress até a versão 7.6.4, permitia aos utilizadores contornar a mesma.
 - Esta falha existia devido à falha na encriptação das credenciais no momento do registo.
--  Isto permitia aos atacantes entrarem na conta de outro utilizador sabendo unicamente o email do mesmo podendo se apoderar de uma conta de um administrador .
+-  Isto permitia aos atacantes entrarem na conta de outro utilizador sabendo unicamente o email do mesmo podendo se apoderar de uma conta de um administrador.
 
 ## Catalogação
 
