@@ -1,9 +1,8 @@
-
 Breve descrição do grupo
 
-* Turno: [L]XX
-* Grupo: YY
+* Turno: [2]11
+* Grupo: 06
 * Alunos:
-    - Aluno1 upZZZZZ 
-    - Aluno2 upZZZZZ
-    - Aluno3 upZZZZZ
+    - Andreia Silva up202108769 
+    - Artur Oliveira up202108663
+    - Tomás Martins up202108776
