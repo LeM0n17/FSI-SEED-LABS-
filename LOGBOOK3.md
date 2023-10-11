@@ -115,10 +115,9 @@ Attack with: ./exploit_CVE-2021-34646.py https://target.com/ 1
 >print(link + f"\n{RST}")
 
 
-<p style='text-align: justify;'>
-De forma a conseguirmos utilizar este script temos de o correr utilizando este comando "./exploit_CVE-2021-34646.py https://target.com/ 1" que neste caso seria "./50299.py http://ctf-fsi.fe.up.pt:5001 1", sendo o segundo elemento o link para o website e o terceiro elemento o id do utilizador ao qual conta queremos aceder (admin id = 1).
+De forma a conseguirmos utilizar este script temos de o correr utilizando este comando './exploit_CVE-2021-34646.py https://target.com/ 1' que neste caso seria './50299.py http://ctf-fsi.fe.up.pt:5001 1', sendo o segundo elemento o link para o website e o terceiro elemento o id do utilizador ao qual conta queremos aceder (admin id = 1).
 
-Com isto são gerados três links que nos permitem aceder a certas contas. Utilizando o link "http://ctf-fsi.fe.up.pt:5001/my-account/?wcj_verify_email=eyJpZCI6IjEiLCJjb2RlIjoiOWEwYzQ3MzcwZGY5ODBhNDU5NTYwYWIzYTUxNTI0NGYifQ", somos redirecionados para o mesmo website mas desta vez estando dentro da conta de um admin. Ai conseguimos aceder a uma mensagem privada aonde é mencionada a flag:
+Com isto são gerados três links que nos permitem aceder a certas contas. Utilizando o link 'http://ctf-fsi.fe.up.pt:5001/my-account/?wcj_verify_email=eyJpZCI6IjEiLCJjb2RlIjoiOWEwYzQ3MzcwZGY5ODBhNDU5NTYwYWIzYTUxNTI0NGYifQ', somos redirecionados para o mesmo website mas desta vez estando dentro da conta de um admin. Ai conseguimos aceder a uma mensagem privada aonde é mencionada a flag:
 
 **flag{please don't bother me}**
-</p>
+
