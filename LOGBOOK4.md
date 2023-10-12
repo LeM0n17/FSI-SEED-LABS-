@@ -34,3 +34,15 @@ it is quite risky. Although the behaviors of programs are decided by their progr
 by users, users can indeed affect the behaviors via environment variables. To understand
 how programs are affected, let us first figure out whether environment variables are
 inherited by the program’s process from the user’s process.
+- Nesta tarefa, concluimos que de facto o processo filho herda as variáveis de ambiente que definimos com o comando 'export' antes de correr o programa da *shell*.
+
+### Task 6
+>Because of the shell program invoked, calling system() within a program is quite 
+dangerous. This is because the actual behavior of the shell program can be affected by 
+environment variables, such as PATH; these environment variables are provided by the 
+user, who may be malicious. By changing these variables, malicious users can control the 
+behavior of the Set-UID program. (...) Can 
+you get this program to run your own malicious code, instead of /bin/ls? If you can, is 
+your malicious code running with the root privilege? Describe and explain your 
+observations.
+- Após a realização desta tarefa, concluimos que alterando a variável de ambiente PATH, e criando um executável com um nome igual ao do executável desejado, é possível executar qualquer programa, mesmo malicioso. Além disso, foi possível verificar que o código estava a ser executado com previlégios de *root*.
