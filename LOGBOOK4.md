@@ -45,4 +45,4 @@ behavior of the Set-UID program. (...) Can
 you get this program to run your own malicious code, instead of /bin/ls? If you can, is 
 your malicious code running with the root privilege? Describe and explain your 
 observations.
-- Após a realização desta tarefa, concluimos que alterando a variável de ambiente PATH, e criando um executável com um nome igual ao do executável desejado, é possível executar qualquer programa, mesmo malicioso. Além disso, foi possível verificar que o código estava a ser executado com previlégios de *root*.
+- Após a realização desta tarefa, concluimos que alterando a variável de ambiente 'PATH', e criando um executável com um nome igual ao do executável desejado, é possível executar qualquer programa, mesmo malicioso. Além disso, foi possível verificar que o código estava a ser executado com previlégios de *root*.
