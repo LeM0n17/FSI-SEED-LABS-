@@ -37,6 +37,7 @@ inherited by the program’s process from the user’s process.
 - Nesta tarefa, concluimos que de facto o processo filho herda as variáveis de ambiente que definimos com o comando 'export' antes de correr o programa da *shell*.
 
 ### Task 6
+
 >Because of the shell program invoked, calling system() within a program is quite 
 dangerous. This is because the actual behavior of the shell program can be affected by 
 environment variables, such as PATH; these environment variables are provided by the 
@@ -46,3 +47,29 @@ you get this program to run your own malicious code, instead of /bin/ls? If you 
 your malicious code running with the root privilege? Describe and explain your 
 observations.
 - Após a realização desta tarefa, concluimos que alterando a variável de ambiente 'PATH', e criando um executável com um nome igual ao do executável desejado, é possível executar qualquer programa, mesmo malicioso. Além disso, foi possível verificar que o código estava a ser executado com previlégios de *root*.
+<br> <br>
+
+# LOGBOOK4 - CTF
+<div align="justify">
+<p>
+Após conectar com o servidor utilizando o comando 'nc ctf-fsi.fe.up.pt 4006', foi possível verificar que após analisar o ficheiros 'admin_note.txt' que estava disponível no diretório inicial, 'flag_reader', era possível criar e escrever ficheiros no diretório /tmp. Além disso, utilizando o comando 'cat' para analisar o código no ficheiro 'my_script.sh' permitiu entender que o programa era executado mas sem primeiro carregar as variáveis de ambiente num ficheiro no mesmo local chamado 'env'. Isto significa que, se conseguissemos alterar a variável de ambiente 'LD_PRELOAD' para que esta apontasse para um ficheiro que carregasse as variáveis de ambiente, podiamos executar o script com as variáveis de ambiente que desejavamos. Assim, após termos utilizado o comando 'ls -ll' foi possível verificar que o ficheiro /home/flag_reader/env era um atalho para o ficheiro /tmp/env. Desta forma, bastou criar um ficheiro 'env' no diretório /tmp que carregasse as variáveis de ambiente e que executasse um programa que imprimisse a 'flag'. Conseguimos entender o programa que era necessário criar, ao analisar o código presente no ficheiro 'main.c'. Neste, verificou-se a utilização da função 'access()' o que indicava que era necessário criar um outro programa que desse 'override' a este mesmo comando. 
+</p>
+<p>
+Assim, como dito anteriormente criou se um ficheiro env no diretório /tmp que alterava a variável de ambiente 'LD_PRELOAD' para que esta apontasse para um ficheiro 'exploit.so' também no diretório /tmp e um ficheiro 'exploit.txt' aonde a flag iria ser guardada. Este ficheiro 'exploit.so' foi criado com o código presente no ficheiro 'exploit.c' (ficheiro que continha o código para alterar a funçao 'acess()') e foi compilado com os comandos 'gcc -fPIC -g -c exploit.c' e 'gcc -shared -o exploit.so exploit.o -lc'. Desta forma, quando o script era executado, o ficheiro 'exploit.so' era carregado e a função 'access()' era substituída pela função que lhe deu 'override', imprimindo a flag, no ficheiro desejado.
+</p>
+<p>
+O código do ficheiro 'exploit.c' é o seguinte:
+
+```C
+#include <fcntl.h>'
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+int access(const char *pathname, int mode){
+    system("/usr/bin/cat /flags/flag.txt > /tmp/exploit.txt");
+    return 0;
+}
+```
+</p>
+</div>
