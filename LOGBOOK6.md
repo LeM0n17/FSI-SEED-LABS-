@@ -1,6 +1,12 @@
 # LOGBOOK6 - CTF - XSS + CSRF
 <div align="justify">
-<p>Neste CTF, ao entrar no site mencionado, deparamo nos com uma caixa de texto na qual podemos inserir qualquer tipo de conteúdo, e o administrador fornecerá a flag dependendo do input. Para analisar o que acontece no site, inserimos um texto e observamos que há uma página com um formulário onde o administrador decide se o input enviado é aceitável (fornecendo assim a flag) ou não.
+<p>Neste CTF, ao entrar no site mencionado, deparamo nos com uma caixa de texto na qual podemos inserir qualquer tipo de conteúdo, e o administrador fornecerá a flag dependendo do input. </p>
+</div>
+![Alt text](uploads/logbook6P1.png)
+
+<div align="justify">
+<p>
+Para analisar o que acontece no site, inserimos um texto e observamos que há uma página com um formulário onde o administrador decide se o input enviado é aceitável (fornecendo assim a flag) ou não.
 Com isso em mente, pensamos que poderia ser possível inserir um formulário idêntico ao que o administrador tinha acesso, mas com um 'script' que 'forçasse' o administrador a aceitar o que era enviado.
 Analisando o código-fonte da página, verificamos que o 'formulário' que precisa de ser enviado, fornecendo a flag, possui o seguinte código:</p>
 </div>
