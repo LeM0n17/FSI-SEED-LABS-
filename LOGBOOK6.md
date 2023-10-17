@@ -33,7 +33,7 @@ Com isso, o 'input' que enviamos foi o seguinte:
 <script>document.getElementById('fake_id').submit()</script>  
 ```
 <div align="justify">
-<p>Após o envio do nosso formulário, a página é recarregada, mostrando a flag, embora esta seja redirecionada para outra página quase instantaneamente. Portanto, para obtermos a flag, assim que enviamos a nossa resposta, pressionamos o botão 'parar' para evitar o redirecionamento automático, conseguindo então obter a flag: flag{0d190349a6f060ce425ee7ce5b35f00f}.</p>
+<p>Após o envio do nosso formulário, a página é recarregada, mostrando a flag, embora esta seja redirecionada para outra página quase instantaneamente. Portanto, para obtermos a flag, assim que enviamos a nossa resposta, pressionamos o botão 'parar' para evitar o redirecionamento automático, conseguindo então obter a flag: flag{a03da844bb383e699a2c1a32c5d4a0d6}.</p>
 ![Alt text](uploads/logbook6P4.png)
 ![Alt text](uploads/logbook6P5.png)
 ![Alt text](uploads/logbook6P6.png)
