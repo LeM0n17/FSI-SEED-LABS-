@@ -6,7 +6,7 @@ Analisando o código-fonte da página, verificamos que o 'formulário' que preci
 </div>
 
 ```html
-<form method="POST" action="/request/5213d32d17b986fb67786a37656e99132d1504bb/approve" role="form">
+<form method="POST" action="/request/6b14dc9c65f712d891dfffadbfcec3d631d032d4/approve" role="form">
     <div class="submit">
         <input type="submit" id="giveflag" value="Give the flag" disabled="">
     </div>
@@ -19,7 +19,7 @@ Assim, para que o formulário seja 'submited' automaticamente, inserimos o segui
 ```
 Com isso, o 'input' que enviamos foi o seguinte:
 ```html
-<form method="POST" id='fake_id' action="http://ctf-fsi.fe.up.pt:5005/request/ce4691e1672a5a013ef6e2ec2508ac338662e57b/approve" role="form">
+<form method="POST" id='fake_id' action="http://ctf-fsi.fe.up.pt:5005/request/6b14dc9c65f712d891dfffadbfcec3d631d032d4/approve" role="form">
     <div class="submit">     
         <input type="submit">
     </div> 
