@@ -52,3 +52,5 @@ Considerando que de facto o método explicado anteriormente não é assim tão s
 <script>document.getElementById('fake_id').submit()</script> 
 ```
 <p> Como se pode perceber, a unica alteração que foi feita foi a adição do atributo 'target="blank"' no 'form' que foi colocado no input. Este atributo faz com que o formulário seja submetido numa nova página, o que permite que a flag seja mostrada. </p>
+
+<video src="uploads/logbook6P7.mp4" controls title="Flag"></video>
