@@ -204,7 +204,7 @@ r.sendline("abcabcabcabcabcabcabcabcabcabcab$#üþflag.txt")
 r.interactive()
 ```
 
-Por fim executamos o programa o que provocou buffer overflow e abriu-nos uma root shell.
+Por fim, executamos o programa, que provocou um buffer overflow e abriu uma shell com permissões root.
 
 ![Alt text](uploads/logbook5P6.png)
 </div>
