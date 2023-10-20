@@ -24,10 +24,10 @@ Ficheiros gerados:
 <p> Nesta tarefa foi nos pedido para primeiramente criar um ficheiro 'badfile'. Após isso, tivemos que executar o programa stack-L1 em modo debug de forma a descobrir o endereço do buffer e o valor do ebp. Assim, obtivemos os seguintes resultados:</p>
 </div>
 
-- valor do ebp: 0xffffca68
-- endereço do buffer: 0xffffc9fc
+- valor do ebp: 0xffffca18
+- endereço do buffer: 0xffffc9ac
 
-![Alt text](uploads/logbook5P4.png)
+![Alt text](uploads/logbook5P5.png)
 
 ### Task3.2 - Launching the Attack
 <div align="justify">
@@ -146,6 +146,10 @@ with open('badfile', 'wb') as f:
   f.write(content)
 ```
 
+Por fim, executamos o programa, que provocou um buffer overflow e abriu uma shell com permissões root.
+
+![Alt text](uploads/logbook5P6.png)
+
 # LOGBOOK5 - CTF
 ## Desaio 1
 >Existe algum ficheiro que é aberto e lido pelo programa?
@@ -204,7 +208,4 @@ r.sendline("abcabcabcabcabcabcabcabcabcabcab$#üþflag.txt")
 r.interactive()
 ```
 
-Por fim, executamos o programa, que provocou um buffer overflow e abriu uma shell com permissões root.
-
-![Alt text](uploads/logbook5P6.png)
 </div>
