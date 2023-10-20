@@ -27,7 +27,7 @@ Ficheiros gerados:
 - valor do ebp: 0xffffca68
 - endereço do buffer: 0xffffc9fc
 
-![Alt text](uploads/logbook5P4.png)
+![Alt text](uploads/logbook5P4.1.png)
 
 ### Task3.2 - Launching the Attack
 <div align="justify">
