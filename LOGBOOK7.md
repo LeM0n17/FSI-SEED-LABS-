@@ -115,7 +115,7 @@ Para esta tarefa, percebemos que teriamos que imprimir o conteúdo da heap. Para
 
 ![secretMAdd](uploads/logbook7P3.png)
 
-Assim, e considerando que o endereço da mensagem secreta é 0x0804a028, o nosso input foi gerado com o seguinte scrypt:
+Assim, e considerando que o endereço da mensagem secreta é 0x080b4008, o nosso input foi gerado com o seguinte scrypt:
 
 ```python
 
