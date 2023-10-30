@@ -115,7 +115,7 @@ Para esta tarefa, percebemos que teriamos que imprimir o conteúdo da heap. Para
 
 ![secretMAdd](uploads/logbook7P3.png)
 
-Assim, e considerando que o endereço da mensagem secreta é 0x080b4008, o nosso input foi gerado com o seguinte scrypt:
+Assim, e considerando que o endereço da mensagem secreta é 0x080b4008, o nosso input foi gerado com o seguinte script:
 
 ```python
 
@@ -210,7 +210,7 @@ Com isto, conseguimos alterar o valor da variável target para 0x0000023C, como 
 ![targetOutput](uploads/logbook7P6.png)
 
 <p>
-O valor que obtivemos foi 0x0000023C, que corresponde a 572 em decimal. Isto deve-se ao facto de que o %n escreve o número de bytes que foram impressos até ao momento. Assim, como foram impressos 572 caracteres até ao momento, o valor da variável target foi alterado para 572 = 0x0000023C.
+O valor que obtivemos foi 0x0000023C, que corresponde a 572 em decimal. Isto deve-se ao facto de que o %n escreve o número de caracteres que foram impressos até ao momento. Assim, como foram impressos 572 caracteres até ao momento, o valor da variável target foi alterado para 572 = 0x0000023C.
 </p>
 </div>
 
