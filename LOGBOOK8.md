@@ -111,7 +111,7 @@ Ao clicar em 'save' podemos verificar que de facto o salário da Alice foi alter
 <p>
 Da mesma forma que conseguimos alterar o salário da Alice, também conseguimos alterar o salário de outros utilizadores, neste caso do Boby. Para isso basta alterar um dos campos no formulário de edição de perfil, colocando o comando SQL. Neste caso colocamos no Nickname o seguinte comando:
 
-'Boby,salary = 1 WHERE name='Boby'#
+Alice',salary = 1 WHERE name='Boby'#
 </p>
 
 ![](uploads/logbook8P15.png)
