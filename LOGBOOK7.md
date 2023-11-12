@@ -379,7 +379,7 @@ Executando o script, conseguimos obter a flag:
 
 ![Flag](uploads/logbook7P10.png)
 
-## Desaio 2
+## Desafio 2
 
 >Análise do 'checksec'
 
