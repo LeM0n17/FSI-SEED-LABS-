@@ -145,3 +145,83 @@ This is a test file
 Isso acontece porque o ECB divide o ficheiro em blocos de bytes de tamanho fixo e encripta os separadamente. Como a mesma chave é usada para cada bloco e eles são independentes, certos padrões começam a aparecer no ficheiro encriptado, o que pode mostrar semelhanças com o ficheiro original.
 
 Já o modo CBC usa um vetor de inicialização e realiza um XOR nos blocos de dados antes de se realizar a encriptação. Os dados encriptados são usados como vetor de inicialização para o próximo bloco, que também é XORed. Esse processo continua até o final do ficheiro. Isso cria uma cadeia de encriptação em que cada bloco encriptado é completamente diferente do anterior, mesmo que represente o mesmo padrão de dados. Como resultado, o ficheiro final fica completamente irreconhecível, como visto nas imagens anteriores. </p>
+
+# LOGBOOK10 - CTF
+
+> cipherspec.py:
+<p>
+O problema encontra se na função 'gen', função que gera a chave. Esta é composta por 13 bytes nulos (0x00) seguidos por 3 bytes aleatórios. Isto é um problema de segurança, pois reduz significativamente a quantidade de chaves possíveis. Em vez de ter que adivinhar uma chave de 16 bytes (128 bits), um atacante só precisa adivinhar os últimos 3 bytes (24 bits), o que é muito mais fácil.
+</p>
+
+> Como consigo usar esta ciphersuite para cifrar e decifrar dados?
+<p>
+Podemos utilizar a ciphersuite utilizando a função enc para encriptar uma mensagem e a função dec para decifrar uma mensagem.
+</p>
+
+> Como consigo fazer uso da vulnerabilidade que observei para quebrar o código?
+<p>
+Para quebrar o código, podemos tentar de forma bruta gerar todas as chaves possíveis e verificar se alguma delas decifra a mensagem e decifrar utilizando a função dec.
+</p>
+
+> Como consigo automatizar este processo, para que o meu ataque saiba que encontrou a flag?
+<p>
+Podemos automatizar o processo utilizando um script de python que gera todas as chaves possíveis e verifica se alguma delas decifra a mensagem. Se alguma mensagem decifrada começar por 'flag{', então essa é impressa no ecrã.
+</p>
+
+> Encontrar a flag:
+
+<p> 
+Primeiramente entrando no servidor com o comando 'nc ctf-fsi.fe.up.pt 6003', é nos fornecido o nonce e a mensagem encriptada. </p>
+
+- nonce: da6074da3b9243a4cc7799bd1695a6e3
+- ciphertext: f525c6710088f0e247d3e7a6d4258955fe502e0c797ce8513c1fd193878a1974af596984365b9b
+
+![Alt text](uploads/logbook10P13.png)
+
+<p>
+A partir dai, criamos um script de python 'help.py', que tem como objetivo gerar todas as chaves possíveis e verificar se alguma delas decifra a mensagem.
+</p>
+
+```python
+from cipherspec import dec, KEYLEN
+import os
+import binascii
+
+# Define a function to check if a decrypted message is the flag
+def is_successful(msg):
+    try:
+        # Try to decode the message as ASCII
+        msg_str = msg.decode('ascii')
+    except UnicodeDecodeError:
+        # If the message cannot be decoded as ASCII, it's not the flag
+        return False
+    # If the message starts with 'flag{', it's the flag
+    return msg_str.startswith('flag{')
+
+
+# Define a function to break the cipher
+def break_cipher(c, nonce):
+    offset = 3
+    # Try every possible key
+    for i in range(256**offset):
+        # Generate a key by appending the current value to the number of null bytes given on the cipherspec.py file
+        key = bytearray(b'\x00'*(KEYLEN-offset))
+        key.extend(i.to_bytes(offset, 'big'))
+        # Decrypt the ciphertext with the current key
+        msg = dec(key, c, nonce)
+        # Check if the decrypted message is the flag
+        if is_successful(msg):
+            # If it is, print the key and the message and stop
+            print("Key:", binascii.hexlify(key))
+            print("Message:", msg.decode('ascii'))
+            break
+
+nonce = bytes.fromhex('496f1efada7d8f7abd8af3579d851f5b')
+ciphertext = bytes.fromhex('d49acac8e33d2234218d20b669f3dddad75595790d8fa2e27998ff47e7da597499f23af977a51c')
+
+break_cipher(ciphertext, nonce)
+```
+<p>
+Após correr o script, obtivemos a seguinte key e flag: </p>
+
+![Alt text](uploads/logbook10P14.png)
