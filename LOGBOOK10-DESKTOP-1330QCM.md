@@ -125,23 +125,10 @@ This is a test file
 
 # Task 3: Encryption Mode – ECB vs. CBC
 
-<p> Para esta tarefa, é nos pedido para encriptar uma imagem utilizando os modos ECB e CBC. A imagem original é a seguinte: </p>
-
-![Alt text](uploads/logbook10P11.png)
-
+<p> Para esta tarefa, é nos pedido para encriptar uma imagem utilizando os modos ECB e CBC. </p>
 
 - ECB:
-<p> De forma a encriptar a imagem utilizando o modo ECB, utilizamos o comando 'openssl enc -aes-128-ecb -e -in pic_original.bmp -out pic_ecb.bmp -K 00112233445566778889aabbccddeeff'. O resultado obtido foi o seguinte: </p>
-
-![Alt text](uploads/logbook10P10.png)
+<p> O modo ECB é um modo de encriptação que encripta cada bloco de texto de forma independente, ou seja, não existe qualquer relação entre os blocos. Assim, se existirem blocos iguais, estes serão encriptados da mesma forma. </p>
 
 - CBC:
-<p> De forma a encriptar a imagem utilizando o modo CBC, utilizamos o comando 'openssl enc -aes-128-cbc -e -in pic_original.bmp -out pic_cbc.bmp -K 00112233445566778889aabbccddeeff -iv 0102030405060708'. O resultado obtido foi o seguinte: </p>
-
-![Alt text](uploads/logbook10P12.png)
-
-<p> Ao usar o modo CBC, a imagem fica visualmente distorcida e não é possível identificar o seu conteúdo. No entanto, com o modo ECB, ainda é possível reconhecer a imagem, embora com menos detalhes e cores corretas.
-
-Isso acontece porque o ECB divide o ficheiro em blocos de bytes de tamanho fixo e encripta os separadamente. Como a mesma chave é usada para cada bloco e eles são independentes, certos padrões começam a aparecer no ficheiro encriptado, o que pode mostrar semelhanças com o ficheiro original.
-
-Já o modo CBC usa um vetor de inicialização e realiza um XOR nos blocos de dados antes de se realizar a encriptação. Os dados encriptados são usados como vetor de inicialização para o próximo bloco, que também é XORed. Esse processo continua até o final do ficheiro. Isso cria uma cadeia de encriptação em que cada bloco encriptado é completamente diferente do anterior, mesmo que represente o mesmo padrão de dados. Como resultado, o ficheiro final fica completamente irreconhecível, como visto nas imagens anteriores. </p>
+<p> O modo CBC é um modo de encriptação que encripta cada bloco de texto de forma dependente, ou seja, existe uma relação entre os blocos. Assim, se existirem blocos iguais, estes serão encriptados de forma diferente. </p>
