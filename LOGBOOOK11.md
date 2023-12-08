@@ -137,9 +137,7 @@ openssl ca -config myCA_openssl.cnf -policy policy_anything \
 -in server.csr -out server.crt -batch \
 -cert ca.crt -keyfile ca.key
 ```
-
 ![](uploads/logbook11P9.png)
-
 <p>
 Ao correr o seguinte comando são gerados 2 ficheiros o server.crt e server.csr.
 </p>
