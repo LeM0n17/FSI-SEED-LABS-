@@ -183,3 +183,11 @@ Voltamos a iniciar o nosso servidor e podemos de seguida ver o site `example.com
 ![](uploads/logbook11P15.png)
 
 Como o site foi criado sem nenhuma alteração ao certificado de server que tinhamos usado anteriormente, o site `example.com` é considerado inseguro pois ele não faz parte do certificado.
+
+## Task 6 -  Launching a Man-In-The-Middle Attack with a Compromised CA
+
+Infelizmente não conseguimos realizar a task 6, o nosso raciocinio foi repetir os passos realizados na task 2 incluindo o site `example.com` aos sites abrangidos pelo certificado.
+
+Mas ao adicionarmos os ficheiros ao `bank32_apache_ssl.conf` e tentarmos iniciar o servidor, surge-nos este erro:
+
+![](uploads/logbook11P16.png)
