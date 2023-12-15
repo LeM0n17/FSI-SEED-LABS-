@@ -191,3 +191,109 @@ Infelizmente não conseguimos realizar a task 6, o nosso raciocinio foi repetir 
 Mas ao adicionarmos os ficheiros ao `bank32_apache_ssl.conf` e tentarmos iniciar o servidor, surge-nos este erro:
 
 ![](uploads/logbook11P16.png)
+
+
+# LOGBOOK11 - CTF
+
+<p>
+Esta semana, a tarefa pedida era desincriptar a flag usando a criptografia RSA. Ao executar o comando nc ctf-fsi.fe.up.pt 6004, recebemos o valor de n para o 'cyphertext', bem como o 'public expoent' e. Também sabiamos que os valores de p e q estavam em torno de 2^512 e 2^513, respetivamente, o que torna um ataque de 'brute force' viável.
+
+O processo escolhido passou por criar duas listas de números primos próximos a p e q dentro de uma certa distância delta das suas respetivas potências de base 2. Em seguida, calculamos o valor de d usado na fórmula de criptografia RSA ed % (p-1)(q-1) = 1, calculando o inverso modular usando o 'extended algorithm' do maior divisor comum. Por fim, usamos a função dec com algumas alterações para testar todos os valores calculados até que o texto seja legível e comece com "flag".
+
+Assim, desenvolvemos o seguinte código:
+
+>testPrime(n)
+```python
+def testPrime(n):
+    if n == 2 or n == 3:
+        return True
+
+    if n <= 1 or n % 2 == 0:
+        return False
+
+    r, d = 0, n - 1
+    while d % 2 == 0:
+        r += 1
+        d //= 2
+
+    for _ in range(5):
+        a = random.randrange(2, n - 1)
+        x = pow(a, d, n)
+        if x == 1 or x == n - 1:
+            continue
+        for _ in range(r - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                break
+        else:
+            return False
+    return True
+```
+
+>findDelta(e,p,q) 
+```python
+def extended_gcd(a, b):
+    if a == 0:
+        return b, 0, 1
+    else:
+        g, x, y = extended_gcd(b % a, a)
+        return g, y - (b // a) * x, x
+
+def modinv(a, m):
+    g, x, y = extended_gcd(a, m)
+    if g != 1:
+        return None
+    else:
+        return x % m
+
+def findDelta(e, p ,q):
+   return modinv(e, (p-1)*(q-1))
+```
+>dec(msg, d, n)
+```python
+def dec(msg, d, n):
+    int_msg = int.from_bytes(unhexlify(msg), "little")
+    res = pow(int_msg,d,n)
+    return res.to_bytes(256, 'little')
+```
+
+>main
+```python
+list_of_p_primes= []
+for i in range(2**512 - 10000, 2**512 + 10000):
+    if testPrime(i):
+        list_of_p_primes.append(i)
+
+list_of_q_primes= []
+for i in range(2**513 - 10000, 2**513 + 10000):
+    if testPrime(i):
+        list_of_q_primes.append(i)
+
+for p in list_of_p_primes:
+    for q in list_of_q_primes:
+        if p * q == n:
+            print("p: ", p)
+            print("q: ", q)
+            d = findD(65537, p, q)
+            res = dec(unhexlify(msg), d, n)
+            if res[:4] == b"flag":
+                print(res)
+                exit()
+```
+
+>n
+```python
+n = 359538626972463181545861038157804946723595395788461314546860162315465351611001926265416954644815072042240227759742786715317579537628833244985694861279004092275563997766650696366721966551613139797548933222588230171089402511870182086106206027533519627103030004058519310881700376798871190073497608807358790595259
+```
+
+>e
+```python
+e = 65537
+```
+
+>msg
+```python
+msg = 3331346664313538626635613865396632633038626665313434383065613036323839633337356265323763323061616134653637393131396536303836363838623631623165663639616538616365303161653662646164343636636138396234353130333431316633376334656134643636353236613663386333633730343937323030386434643430326166313332663861316134333833633865316135626638663337386239306364306637356434666631366633346362656531343032343135376237336434373136333161633462363562636632656139313066613534653335656365363661306664663761336530373636326233636431373230313030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030
+```
+
+![Alt text](uploads/logbook11P17.png)
