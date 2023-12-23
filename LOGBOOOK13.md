@@ -72,7 +72,7 @@ filter_tcp ='tcp and src host 10.9.0.6 and dst port 23'
 filter_icmp = 'icmp'
 filter_tcp = 'tcp and src host 10.9.0.6 and dst port 23'
 
-pkt = sniff(iface='br-908e0ec6c682', filter=filtertcp, prn=print_pkt)
+pkt = sniff(iface='br-908e0ec6c682', filter=filter_tcp, prn=print_pkt)
 ```
 
 <p>To test it we sent 'Hello World!' form hostB to port 23</p>
